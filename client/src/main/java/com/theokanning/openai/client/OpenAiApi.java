@@ -111,7 +111,7 @@ public interface OpenAiApi {
     // remove this header when out of beta
     @Headers({"OpenAI-Beta: assistants=v1"})
     @POST("/v1/threads/{thread_id}/messages/{message_id}")
-    Single<AssistantMessage> createMessage(@Path("thread_id") String threadId, @Path("message_id") String messageId , @Body AssistantMessage requestBody);
+    Single<AssistantMessage> modifyMessage(@Path("thread_id") String threadId, @Path("message_id") String messageId , @Body AssistantMessage requestBody);
     
     // remove this header when out of beta
     @Headers({"OpenAI-Beta: assistants=v1"})
@@ -121,12 +121,12 @@ public interface OpenAiApi {
     // remove this header when out of beta
     @Headers({"OpenAI-Beta: assistants=v1"})
     @GET("/v1/threads/{thread_id}/messages/{message_id}/files/{file_id}")
-    Single<AssistantMessageFile> getMessage(@Path("thread_id") String threadId, @Path("message_id") String messageId, @Path("file_id") String fileId);
+    Single<AssistantMessageFile> getMessageFile(@Path("thread_id") String threadId, @Path("message_id") String messageId, @Path("file_id") String fileId);
     
     // remove this header when out of beta
     @Headers({"OpenAI-Beta: assistants=v1"})
     @GET("v1/threads/{thread_id}/messages/{message_id}/files")
-    Single<ListAssistantsResponse<AssistantMessageFile>> listMessages(@Path("thread_id") String threadId, @Path("message_id") String messageId,
+    Single<ListAssistantsResponse<AssistantMessageFile>> listMessageFiles(@Path("thread_id") String threadId, @Path("message_id") String messageId,
     		@Query(value = "") ListAssistantsRequest request);
    
     

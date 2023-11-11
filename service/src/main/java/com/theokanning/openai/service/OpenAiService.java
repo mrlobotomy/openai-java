@@ -1,5 +1,15 @@
 package com.theokanning.openai.service;
 
+import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,9 +18,12 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.theokanning.openai.DeleteResult;
 import com.theokanning.openai.OpenAiError;
 import com.theokanning.openai.OpenAiHttpException;
-import com.theokanning.openai.OpenAiResponse;
 import com.theokanning.openai.assistants.Assistant;
 import com.theokanning.openai.assistants.AssistantBody;
+import com.theokanning.openai.assistants.AssistantMessage;
+import com.theokanning.openai.assistants.AssistantMessageFile;
+import com.theokanning.openai.assistants.AssistantThread;
+import com.theokanning.openai.assistants.AssistantThreadResponse;
 import com.theokanning.openai.assistants.ListAssistantsRequest;
 import com.theokanning.openai.assistants.ListAssistantsResponse;
 import com.theokanning.openai.audio.CreateTranscriptionRequest;
@@ -23,7 +36,13 @@ import com.theokanning.openai.client.OpenAiApi;
 import com.theokanning.openai.completion.CompletionChunk;
 import com.theokanning.openai.completion.CompletionRequest;
 import com.theokanning.openai.completion.CompletionResult;
-import com.theokanning.openai.completion.chat.*;
+import com.theokanning.openai.completion.chat.ChatCompletionChunk;
+import com.theokanning.openai.completion.chat.ChatCompletionRequest;
+import com.theokanning.openai.completion.chat.ChatCompletionResult;
+import com.theokanning.openai.completion.chat.ChatFunction;
+import com.theokanning.openai.completion.chat.ChatFunctionCall;
+import com.theokanning.openai.completion.chat.ChatMessage;
+import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.edit.EditRequest;
 import com.theokanning.openai.edit.EditResult;
 import com.theokanning.openai.embedding.EmbeddingRequest;
@@ -43,24 +62,21 @@ import com.theokanning.openai.image.ImageResult;
 import com.theokanning.openai.model.Model;
 import com.theokanning.openai.moderation.ModerationRequest;
 import com.theokanning.openai.moderation.ModerationResult;
+
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
-import okhttp3.*;
+import okhttp3.ConnectionPool;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.HttpException;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class OpenAiService {
 
@@ -149,6 +165,49 @@ public class OpenAiService {
     public ListAssistantsResponse<Assistant> listAssistants(ListAssistantsRequest request) {
     	return execute(api.listAssistants(request));
     }
+
+    
+    public AssistantThreadResponse createThread(AssistantThread requestBody) {
+    	return execute(api.createThread(requestBody));
+    }
+    
+    public AssistantThreadResponse getThread(String threadId) {
+    	return execute(api.getThread(threadId));
+    }
+   
+    public AssistantThreadResponse modifyThread(String threadId, AssistantThread requestBody) {
+    	return execute(api.modifyThread(threadId, requestBody));
+    }
+ 
+    public DeleteResult deleteThread(String threadId) {
+    	return execute(api.deleteThread(threadId));
+    }
+
+    public AssistantMessage createMessage(String threadId, AssistantMessage requestBody) {
+    	return execute(api.createMessage(threadId, requestBody));
+    }
+    
+    public AssistantMessage getMessage(String threadId, String messageId) {
+    	return execute(api.getMessage(threadId, messageId));
+    }
+
+    public AssistantMessage createMessage(String threadId, String messageId , AssistantMessage requestBody) {
+    	return execute(api.modifyMessage(threadId, messageId, requestBody));
+    }
+    
+    public ListAssistantsResponse<AssistantMessage> listMessages(String threadId, ListAssistantsRequest request) {
+    	return execute(api.listMessages(threadId, request));
+    }
+   
+    public AssistantMessageFile getMessageFile(String threadId, String messageId, String fileId) {
+    	return execute(api.getMessageFile(threadId, messageId, fileId));
+    }
+    
+    public ListAssistantsResponse<AssistantMessageFile> listMessageFiles(String threadId, String messageId,
+    		ListAssistantsRequest request) {
+    	return execute(api.listMessageFiles(threadId, messageId, request));
+    }
+   
 
     
     public CompletionResult createCompletion(CompletionRequest request) {
