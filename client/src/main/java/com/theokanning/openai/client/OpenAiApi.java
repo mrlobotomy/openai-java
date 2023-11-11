@@ -4,8 +4,11 @@ import com.theokanning.openai.DeleteResult;
 import com.theokanning.openai.OpenAiResponse;
 import com.theokanning.openai.assistants.Assistant;
 import com.theokanning.openai.assistants.AssistantBody;
+import com.theokanning.openai.assistants.AssistantCreateThreadRun;
 import com.theokanning.openai.assistants.AssistantMessage;
 import com.theokanning.openai.assistants.AssistantMessageFile;
+import com.theokanning.openai.assistants.AssistantRun;
+import com.theokanning.openai.assistants.AssistantRunStep;
 import com.theokanning.openai.assistants.AssistantThread;
 import com.theokanning.openai.assistants.AssistantThreadResponse;
 import com.theokanning.openai.assistants.ListAssistantsRequest;
@@ -128,7 +131,47 @@ public interface OpenAiApi {
     @GET("v1/threads/{thread_id}/messages/{message_id}/files")
     Single<ListAssistantsResponse<AssistantMessageFile>> listMessageFiles(@Path("thread_id") String threadId, @Path("message_id") String messageId,
     		@Query(value = "") ListAssistantsRequest request);
+
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @POST("/v1/threads/{thread_id}/runs")
+    Single<AssistantRun> createRun(@Path("thread_id") String threadId, @Body AssistantRun requestBody);
+
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @GET("/v1/threads/{thread_id}/runs/{run_id}")
+    Single<AssistantRun> getRun(@Path("thread_id") String threadId, @Path("run_id") String runId);
+
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @POST("/v1/threads/{thread_id}/runs/{run_id}")
+    Single<AssistantRun> modifyRun(@Path("thread_id") String threadId, @Path("run_id") String runId, @Body AssistantRun requestBody);
+
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @GET("/v1/threads/{thread_id}/runs")
+    Single<ListAssistantsResponse<AssistantRun>> listRuns(@Path("thread_id") String threadId, @Query(value = "") ListAssistantsRequest request);
    
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @POST("/v1/threads/{thread_id}/runs/{run_id}/submit_tool_outputs")
+    Single<AssistantRun> submitToolOutput(@Path("thread_id") String threadId, @Path("run_id") String runId, @Body AssistantRun requestBody);
+
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @POST("/v1/threads/runs")
+    Single<AssistantRun> createThreadRun(@Body AssistantCreateThreadRun requestBody);
+    
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @GET("/v1/threads/{thread_id}/runs/{run_id}/steps/{step_id}")
+    Single<AssistantRunStep> getRunStep(@Path("thread_id") String threadId, @Path("run_id") String runId, @Path("step_id") String stepId);
+
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @GET("/v1/threads/{thread_id}/runs/{run_id}/steps")
+    Single<ListAssistantsResponse<AssistantRunStep>> listRunSteps(@Path("thread_id") String threadId, @Path("run_id") String runId, @Query(value = "") ListAssistantsRequest request);
+
     
     @POST("/v1/completions")
     Single<CompletionResult> createCompletion(@Body CompletionRequest request);

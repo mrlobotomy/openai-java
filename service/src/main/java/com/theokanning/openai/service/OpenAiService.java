@@ -20,8 +20,11 @@ import com.theokanning.openai.OpenAiError;
 import com.theokanning.openai.OpenAiHttpException;
 import com.theokanning.openai.assistants.Assistant;
 import com.theokanning.openai.assistants.AssistantBody;
+import com.theokanning.openai.assistants.AssistantCreateThreadRun;
 import com.theokanning.openai.assistants.AssistantMessage;
 import com.theokanning.openai.assistants.AssistantMessageFile;
+import com.theokanning.openai.assistants.AssistantRun;
+import com.theokanning.openai.assistants.AssistantRunStep;
 import com.theokanning.openai.assistants.AssistantThread;
 import com.theokanning.openai.assistants.AssistantThreadResponse;
 import com.theokanning.openai.assistants.ListAssistantsRequest;
@@ -208,6 +211,37 @@ public class OpenAiService {
     	return execute(api.listMessageFiles(threadId, messageId, request));
     }
    
+    public AssistantRun createRun(String threadId, AssistantRun requestBody) {
+    	return execute(api.createRun(threadId, requestBody));
+    }
+
+    public AssistantRun getRun(String threadId, String runId) {
+    	return execute(api.getRun(threadId, runId));
+    }
+
+    public AssistantRun modifyRun(String threadId, String runId, AssistantRun requestBody) {
+    	return execute(api.modifyRun(threadId, runId, requestBody));
+    }
+
+    public ListAssistantsResponse<AssistantRun> listRuns(String threadId, ListAssistantsRequest request) {
+    	return execute(api.listRuns(threadId, request));
+    }
+   
+    public AssistantRun submitToolOutput(String threadId, String runId, AssistantRun requestBody) {
+    	return execute(api.submitToolOutput(threadId, runId, requestBody));
+    }
+
+    public AssistantRun createThreadRun(AssistantCreateThreadRun requestBody) {
+    	return execute(api.createThreadRun(requestBody));
+    }
+    
+    public AssistantRunStep getRunStep(String threadId, String runId, String stepId) {
+    	return execute(api.getRunStep(threadId, runId, stepId));
+    }
+
+    public ListAssistantsResponse<AssistantRunStep> listRunSteps(String threadId, String runId, ListAssistantsRequest request) {
+    	return execute(api.listRunSteps(threadId, runId, request));
+    }
 
     
     public CompletionResult createCompletion(CompletionRequest request) {

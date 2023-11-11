@@ -1,5 +1,6 @@
 package com.theokanning.openai.assistants;
 
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,4 +29,9 @@ public class AssistantThread {
 	 * maximum of 512 characters long.
 	 */
 	Map<String, String> metadata;
+	
+	/**
+	 * Only used for create thread and run
+	 */
+	List<AssistantMessage> messages;
 }

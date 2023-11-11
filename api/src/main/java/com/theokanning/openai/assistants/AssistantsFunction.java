@@ -25,4 +25,9 @@ public class AssistantsFunction {
 	 * Note: this will be a JSON string
 	 */
 	String parameters;
+	
+	/**
+	 * Seems to be needed for Run object... not sure why this isn't parameters...
+	 */
+	String arguments;
 }
