@@ -32,6 +32,7 @@ public class TikTokensUtil {
         modelMap.put(ModelEnum.GPT_4_32K.getName(), registry.getEncodingForModel(ModelType.GPT_4));
         modelMap.put(ModelEnum.GPT_4_32K_0314.getName(), registry.getEncodingForModel(ModelType.GPT_4));
         modelMap.put(ModelEnum.GPT_4_0314.getName(), registry.getEncodingForModel(ModelType.GPT_4));
+        modelMap.put(ModelEnum.GPT_4_1106_preview.getName(), registry.getEncodingForModel(ModelType.GPT_4));
     }
 
     /**
@@ -172,13 +173,13 @@ public class TikTokensUtil {
         Encoding encoding = getEncoding(modelName);
         int tokensPerMessage = 0;
         int tokensPerName = 0;
-        //3.5统一处理
+        //3.5ç»Ÿä¸€å¤„ç�†
         if (modelName.equals("gpt-3.5-turbo-0301") || modelName.equals("gpt-3.5-turbo")) {
             tokensPerMessage = 4;
             tokensPerName = -1;
         }
-        //4.0统一处理
-        if (modelName.equals("gpt-4") || modelName.equals("gpt-4-0314")) {
+        //4.0ç»Ÿä¸€å¤„ç�†
+        if (modelName.equals("gpt-4") || modelName.equals("gpt-4-0314") || modelName.equals("gpt-4-1106-preview")) {
             tokensPerMessage = 3;
             tokensPerName = 1;
         }
@@ -222,7 +223,8 @@ public class TikTokensUtil {
         if (ModelEnum.GPT_4.getName().equals(name)
                 || ModelEnum.GPT_4_32K.getName().equals(name)
                 || ModelEnum.GPT_4_32K_0314.getName().equals(name)
-                || ModelEnum.GPT_4_0314.getName().equals(name)) {
+                || ModelEnum.GPT_4_0314.getName().equals(name)
+                || ModelEnum.GPT_4_1106_preview.getName().equals(name)) {
             return ModelType.GPT_4;
         }
 
@@ -254,14 +256,19 @@ public class TikTokensUtil {
          */
         GPT_4_0314("gpt-4-0314"),
         /**
-         * GPT4.0 超长上下文
+         * GPT4.0 è¶…é•¿ä¸Šä¸‹æ–‡
          */
         GPT_4_32K("gpt-4-32k"),
         /**
          * Temporary model, not recommended for use.
          */
         GPT_4_32K_0314("gpt-4-32k-0314"),
+        /**
+         * Temporary model, not recommended for use.
+         */
+        GPT_4_1106_preview("gpt-4-1106-preview"),
         ;
+
         private String name;
     }
 

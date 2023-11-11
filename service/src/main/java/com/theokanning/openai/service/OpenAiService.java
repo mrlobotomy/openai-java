@@ -8,6 +8,11 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.theokanning.openai.DeleteResult;
 import com.theokanning.openai.OpenAiError;
 import com.theokanning.openai.OpenAiHttpException;
+import com.theokanning.openai.OpenAiResponse;
+import com.theokanning.openai.assistants.Assistant;
+import com.theokanning.openai.assistants.AssistantBody;
+import com.theokanning.openai.assistants.ListAssistantsRequest;
+import com.theokanning.openai.assistants.ListAssistantsResponse;
 import com.theokanning.openai.audio.CreateTranscriptionRequest;
 import com.theokanning.openai.audio.CreateTranslationRequest;
 import com.theokanning.openai.audio.TranscriptionResult;
@@ -23,6 +28,7 @@ import com.theokanning.openai.edit.EditRequest;
 import com.theokanning.openai.edit.EditResult;
 import com.theokanning.openai.embedding.EmbeddingRequest;
 import com.theokanning.openai.embedding.EmbeddingResult;
+import com.theokanning.openai.file.AssistantFile;
 import com.theokanning.openai.file.File;
 import com.theokanning.openai.fine_tuning.FineTuningEvent;
 import com.theokanning.openai.fine_tuning.FineTuningJob;
@@ -123,7 +129,28 @@ public class OpenAiService {
     public Model getModel(String modelId) {
         return execute(api.getModel(modelId));
     }
+    
+    public Assistant createAssistants(AssistantBody request) {
+    	return execute(api.createAssistants(request));
+    }
 
+    public Assistant modifyAssistants(String assistantId, AssistantBody request) {
+    	return execute(api.modifyAssistants(assistantId, request));
+    }
+
+    public Assistant getAssistants(String assistantId) {
+    	return execute(api.getAssistants(assistantId));
+    }
+
+    public DeleteResult deleteAssistants(String assistantId) {
+    	return execute(api.deleteAssistants(assistantId));
+    }
+
+    public ListAssistantsResponse<Assistant> listAssistants(ListAssistantsRequest request) {
+    	return execute(api.listAssistants(request));
+    }
+
+    
     public CompletionResult createCompletion(CompletionRequest request) {
         return execute(api.createCompletion(request));
     }
@@ -150,6 +177,28 @@ public class OpenAiService {
 
     public EmbeddingResult createEmbeddings(EmbeddingRequest request) {
         return execute(api.createEmbeddings(request));
+    }
+
+
+    public List<AssistantFile> listAsistantFiles(String assistantId) {
+        return execute(api.listAssistantFiles(assistantId)).data;
+    }
+
+    public AssistantFile uploadAssistantFile(String assistantId, String filepath) {
+        java.io.File file = new java.io.File(filepath);
+        RequestBody purposeBody = RequestBody.create(okhttp3.MultipartBody.FORM, "assisants");
+        RequestBody fileBody = RequestBody.create(MediaType.parse("t:ext"), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", filepath, fileBody);
+
+        return execute(api.uploadAssistantFile(assistantId, purposeBody, body));
+    }
+
+    public DeleteResult deleteAssistantFile(String assistantId, String fileId) {
+        return execute(api.deleteAssistantFile(assistantId, fileId));
+    }
+
+    public AssistantFile retrieveAssistantFile(String assistantId, String fileId) {
+        return execute(api.retrieveAssistantFile(assistantId, fileId));
     }
 
     public List<File> listFiles() {

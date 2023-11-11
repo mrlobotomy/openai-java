@@ -2,6 +2,14 @@ package com.theokanning.openai.client;
 
 import com.theokanning.openai.DeleteResult;
 import com.theokanning.openai.OpenAiResponse;
+import com.theokanning.openai.assistants.Assistant;
+import com.theokanning.openai.assistants.AssistantBody;
+import com.theokanning.openai.assistants.AssistantMessage;
+import com.theokanning.openai.assistants.AssistantMessageFile;
+import com.theokanning.openai.assistants.AssistantThread;
+import com.theokanning.openai.assistants.AssistantThreadResponse;
+import com.theokanning.openai.assistants.ListAssistantsRequest;
+import com.theokanning.openai.assistants.ListAssistantsResponse;
 import com.theokanning.openai.audio.TranscriptionResult;
 import com.theokanning.openai.audio.TranslationResult;
 import com.theokanning.openai.billing.BillingUsage;
@@ -15,6 +23,7 @@ import com.theokanning.openai.edit.EditResult;
 import com.theokanning.openai.embedding.EmbeddingRequest;
 import com.theokanning.openai.embedding.EmbeddingResult;
 import com.theokanning.openai.engine.Engine;
+import com.theokanning.openai.file.AssistantFile;
 import com.theokanning.openai.file.File;
 import com.theokanning.openai.fine_tuning.FineTuningEvent;
 import com.theokanning.openai.fine_tuning.FineTuningJob;
@@ -43,7 +52,84 @@ public interface OpenAiApi {
 
     @GET("/v1/models/{model_id}")
     Single<Model> getModel(@Path("model_id") String modelId);
+    
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @POST("/v1/assistants")
+    Single<Assistant> createAssistants(@Body AssistantBody requestBody);
 
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @GET("/v1/assistants/{assistant_id}")
+    Single<Assistant> getAssistants(@Path("assistant_id") String assistantId);
+    
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @POST("/v1/assistants/{assistant_id}")
+    Single<Assistant> modifyAssistants(@Path("assistant_id") String assistantId, @Body AssistantBody requestBody);
+
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @DELETE("/v1/assistants/{assistant_id}")
+    Single<DeleteResult> deleteAssistants(@Path("assistant_id") String assistantId);
+
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @GET("/v1/assistants")
+    Single<ListAssistantsResponse<Assistant>> listAssistants(@Query(value = "") ListAssistantsRequest request);
+    
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @POST("/v1/threads")
+    Single<AssistantThreadResponse> createThread(@Body AssistantThread requestBody);
+    
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @GET("/v1/threads/{thread_id}")
+    Single<AssistantThreadResponse> getThread(@Path("thread_id") String threadId);
+   
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @POST("/v1/threads/{thread_id}")
+    Single<AssistantThreadResponse> modifyThread(@Path("thread_id") String threadId, @Body AssistantThread requestBody);
+ 
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @DELETE("/v1/threads/{thread_id}")
+    Single<DeleteResult> deleteThread(@Path("thread_id") String threadId);
+
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @POST("/v1/threads/{thread_id}/messages")
+    Single<AssistantMessage> createMessage(@Path("thread_id") String threadId, @Body AssistantMessage requestBody);
+    
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @GET("/v1/threads/{thread_id}/messages/{message_id}")
+    Single<AssistantMessage> getMessage(@Path("thread_id") String threadId, @Path("message_id") String messageId);
+
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @POST("/v1/threads/{thread_id}/messages/{message_id}")
+    Single<AssistantMessage> createMessage(@Path("thread_id") String threadId, @Path("message_id") String messageId , @Body AssistantMessage requestBody);
+    
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @GET("/v1/threads/{thread_id}/messages")
+    Single<ListAssistantsResponse<AssistantMessage>> listMessages(@Path("thread_id") String threadId, @Query(value = "") ListAssistantsRequest request);
+   
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @GET("/v1/threads/{thread_id}/messages/{message_id}/files/{file_id}")
+    Single<AssistantMessageFile> getMessage(@Path("thread_id") String threadId, @Path("message_id") String messageId, @Path("file_id") String fileId);
+    
+    // remove this header when out of beta
+    @Headers({"OpenAI-Beta: assistants=v1"})
+    @GET("v1/threads/{thread_id}/messages/{message_id}/files")
+    Single<ListAssistantsResponse<AssistantMessageFile>> listMessages(@Path("thread_id") String threadId, @Path("message_id") String messageId,
+    		@Query(value = "") ListAssistantsRequest request);
+   
+    
     @POST("/v1/completions")
     Single<CompletionResult> createCompletion(@Body CompletionRequest request);
 
@@ -76,6 +162,19 @@ public interface OpenAiApi {
     @POST("/v1/engines/{engine_id}/embeddings")
     Single<EmbeddingResult> createEmbeddings(@Path("engine_id") String engineId, @Body EmbeddingRequest request);
 
+    @GET("/v1/assistants/{assistant_id}/files")
+    Single<OpenAiResponse<AssistantFile>> listAssistantFiles(@Path("assistant_id") String assistantId);
+
+    @Multipart
+    @POST("/v1/assistants/{assistant_id}/files")
+    Single<AssistantFile> uploadAssistantFile(@Path("assistant_id") String assistantId, @Part("purpose") RequestBody purpose, @Part MultipartBody.Part file);
+
+    @DELETE("/v1/assistants/{assistant_id}/files/{file_id}")
+    Single<DeleteResult> deleteAssistantFile(@Path("assistant_id") String assistantId, @Path("file_id") String fileId);
+
+    @GET("/v1/assistants/{assistant_id}/files/{file_id}")
+    Single<AssistantFile> retrieveAssistantFile(@Path("assistant_id") String assistantId, @Path("file_id") String fileId);
+    
     @GET("/v1/files")
     Single<OpenAiResponse<File>> listFiles();
 
