@@ -1,4 +1,4 @@
-rootProject.name = 'lobotomy-openai-java'
+rootProject.name = 'openai-java'
 
 include 'api'
 include 'client'
